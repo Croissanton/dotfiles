@@ -30,8 +30,8 @@
     "clock": {
         "timezone": "Europe/Madrid",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "format-alt": " {:%d/%m/%Y}",
-        "format": " {:%H:%M}"
+        "format-alt": "  {:%d/%m/%Y}",
+        "format": "  {:%H:%M}"
     },
     "backlight": {
         "device": "intel_backlight",
@@ -52,20 +52,20 @@
     "pulseaudio": {
         // "scroll-step": 1, // %, can be a float
         "format": "{icon} {volume}%",
-        "format-muted": "",
+        "format-muted": " ",
         "format-icons": {
-            "default": ["", "", " "]
+            "default": ["", " ", " "]
         },
-        "on-click": "pavucontrol-qt"
+        "on-click": "killall pavucontrol-qt || pavucontrol-qt"
     },
     "custom/lock": {
         "tooltip": false,
         "on-click": "pidof hyprlock || hyprlock", 
-        "format": ""
+        "format": " "
     },
     "custom/power": {
         "tooltip": false,
         "on-click": "wlogout &",
-        "format": "襤"
+        "format": " "
     }
 }
