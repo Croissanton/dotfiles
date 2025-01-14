@@ -19,7 +19,7 @@
         "spacing": 10
     },
     "custom/music": {
-        "format": "  {}",
+        "format": " 	{}",
         "escape": true,
         "interval": 5,
         "tooltip": false,
@@ -30,8 +30,8 @@
     "clock": {
         "timezone": "Europe/Madrid",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "format-alt": "  {:%d/%m/%Y}",
-        "format": "  {:%H:%M}"
+        "format-alt": "   {:%d/%m/%Y}",
+        "format": "   {:%H:%M}"
     },
     "backlight": {
         "device": "intel_backlight",
@@ -50,8 +50,8 @@
         "format-icons": ["", "",  "", "", "", "", "", "", "", "", "", ""]
     },
     "pulseaudio#input":{
-    	"format-source": " {volume}%",
-	"format-source-muted": "   off ",
+    	"format-source": "  {volume}%",
+	"format-source-muted": "   OFF",
 	"format": "{format_source}",
     	"scroll-step": 1,
     	"smooth-scrolling-threshold": 1,
@@ -63,7 +63,7 @@
     },
     "pulseaudio#output": {
         // "scroll-step": 1, // %, can be a float
-        "format": "{icon}  {volume}%",
+        "format": "{icon}   {volume}%",
         "format-muted": " ",
         "format-icons": {
             "default": ["", " ", " "]
