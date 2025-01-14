@@ -5,7 +5,7 @@
     // Choose the order of the modules
     "modules-left": ["hyprland/workspaces"],
     "modules-center": ["custom/music"],
-    "modules-right": ["pulseaudio", "backlight", "battery", "clock", "tray", "custom/lock", "custom/power"],
+    "modules-right": ["pulseaudio#input", "pulseaudio#output", "backlight", "battery", "clock", "tray", "custom/lock", "custom/power"],
     "hyprland/workspaces": {
          "disable-scroll": true,
          "sort-by-name": true,
@@ -49,7 +49,19 @@
         "format-alt": "{icon}",
         "format-icons": ["", "",  "", "", "", "", "", "", "", "", "", ""]
     },
-    "pulseaudio": {
+    "pulseaudio#input":{
+    	"format-source": " {volume}%",
+	"format-source-muted": "   off ",
+	"format": "{format_source}",
+    	"scroll-step": 1,
+    	"smooth-scrolling-threshold": 1,
+    	"max-volume": 100,
+    	"on-click": "pactl set-source-mute @DEFAULT_SOURCE@ toggle",
+    	"on-click-middle": "killall pavucontrol-qt || pavucontrol-qt",
+    	"on-scroll-up": "pactl set-source-volume @DEFAULT_SOURCE@ +1%",
+    	"on-scroll-down": "pactl set-source-volume @DEFAULT_SOURCE@ -1%"
+    },
+    "pulseaudio#output": {
         // "scroll-step": 1, // %, can be a float
         "format": "{icon}  {volume}%",
         "format-muted": " ",
