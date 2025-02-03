@@ -36,7 +36,7 @@ return {
       local lspconfig = require 'lspconfig'
       lspconfig['lua_ls'].setup { capabilities = capabilities }
       lspconfig['bashls'].setup { capabilities = capabilities }
-      lspconfig['pylsp'].setup { capabilities = capabilities }
+      lspconfig['ruff'].setup { capabilities = capabilities }
       -- Brief aside: **What is LSP?**
       --
       -- LSP is an initialism you've probably heard, but might not understand what it is.
