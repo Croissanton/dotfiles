@@ -35,6 +35,8 @@ return {
       local capabilities = require('blink.cmp').get_lsp_capabilities()
       local lspconfig = require 'lspconfig'
       lspconfig['lua_ls'].setup { capabilities = capabilities }
+      lspconfig['bashls'].setup { capabilities = capabilities }
+      lspconfig['pylsp'].setup { capabilities = capabilities }
       -- Brief aside: **What is LSP?**
       --
       -- LSP is an initialism you've probably heard, but might not understand what it is.

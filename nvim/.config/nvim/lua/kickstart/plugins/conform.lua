@@ -34,10 +34,12 @@ return {
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { 'black' },
+        javascript = { 'prettierd' },
+        bash = { 'beautysh' },
+
         --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        -- You can use 'stop_after_first = true' to run the first available formatter from the list
       },
     },
   },
