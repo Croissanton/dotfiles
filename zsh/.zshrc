@@ -68,7 +68,20 @@ alias grep='batgrep'
 alias man='batman'
 alias tree='broot'
 alias diff='batdiff'
+alias fk='fuck'
 
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init zsh)"
+eval "$(thefuck --alias)"
+
+# Yazi config
+function y() {
+   export EDITOR="nvim"
+   local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+   yazi "$@" --cwd-file="$tmp"
+   if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+      builtin cd -- "$cwd"
+   fi
+   rm -f -- "$tmp"
+}
