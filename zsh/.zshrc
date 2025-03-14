@@ -69,11 +69,13 @@ alias man='batman'
 alias tree='broot'
 alias diff='batdiff'
 alias fk='fuck'
+alias docker='sudo docker'
 
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init zsh)"
 eval "$(thefuck --alias)"
+eval "$(uv generate-shell-completion zsh)"
 
 # Yazi config
 function y() {
