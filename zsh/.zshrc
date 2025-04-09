@@ -69,7 +69,6 @@ alias man='batman'
 alias tree='broot'
 alias diff='batdiff'
 alias fk='fuck'
-alias docker='sudo docker'
 
 # Shell integrations
 eval "$(fzf --zsh)"
