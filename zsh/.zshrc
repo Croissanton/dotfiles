@@ -60,6 +60,7 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Aliases
+alias docker='podman'
 alias ls='eza --icons'
 alias vim='nvim'
 alias cd='z'
