@@ -70,6 +70,7 @@ alias man='batman'
 alias tree='broot'
 alias diff='batdiff'
 alias fk='fuck'
+alias k='kubectl'
 
 # Shell integrations
 eval "$(fzf --zsh)"
@@ -87,3 +88,8 @@ function y() {
    fi
    rm -f -- "$tmp"
 }
+
+# Kubernetes
+export KUBECONFIG=~/.kube/config
+source <(kubectl completion zsh)
+source <(helm completion zsh)
