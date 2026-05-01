@@ -9,7 +9,6 @@ fi
 
 # Source/Load zinit
 source "${ZINIT_HOME}/zinit.zsh"
-source ~/.zsh/zsh-syntax-highlighting/themes/catppuccin_macchiato-zsh-syntax-highlighting.zsh
 
 # Load starship theme
 # line 1: `starship` binary as command, from github release
@@ -69,14 +68,11 @@ alias grep='rg'
 alias man='batman'
 alias tree='broot'
 alias diff='batdiff'
-alias fk='fuck'
 alias k='kubectl'
 
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init zsh)"
-eval "$(thefuck --alias)"
-eval "$(uv generate-shell-completion zsh)"
 
 # Yazi config
 function y() {
@@ -89,7 +85,10 @@ function y() {
    rm -f -- "$tmp"
 }
 
-# Kubernetes
+# kubectl 
 export KUBECONFIG=~/.kube/config
 source <(kubectl completion zsh)
-source <(helm completion zsh)
+
+# labctl
+export PATH=$PATH:/home/croiss/.iximiuz/labctl/bin
+source <(labctl completion zsh)
