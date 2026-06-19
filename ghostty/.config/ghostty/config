@@ -8,6 +8,8 @@ gtk-titlebar = false
 mouse-hide-while-typing = true
 window-save-state = always
 
+copy-on-select = clipboard
+
 # keybindings
 keybind = alt+a>r=reload_config
 keybind = alt+a>x=close_surface
