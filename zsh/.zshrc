@@ -14,7 +14,7 @@ source "${ZINIT_HOME}/zinit.zsh"
 # line 1: `starship` binary as command, from github release
 # line 2: starship setup at clone(create init.zsh, completion)
 # line 3: pull behavior same as clone, source init.zsh
-# The prompt only makes sense in a real terminal; skip non-tty runs (e.g. omp `!cmd` -> zsh -i -c, TERM=dumb)
+# The prompt only makes sense in a real terminal; skip non-tty runs (TERM=dumb)
 if [[ -t 0 ]]; then
    zinit ice as"command" from"gh-r" \
              atclone"./starship init zsh > init.zsh; ./starship completions zsh > _starship" \
@@ -74,7 +74,7 @@ alias diff='batdiff'
 alias k='kubectl'
 
 # Shell integrations
-# fzf keybindings need a real line editor; skip non-tty runs (e.g. omp `!cmd` -> zsh -i -c, TERM=dumb)
+# fzf keybindings need a real line editor; skip non-tty runs (TERM=dumb)
 if [[ -t 0 ]]; then
    eval "$(fzf --zsh)"
 fi
