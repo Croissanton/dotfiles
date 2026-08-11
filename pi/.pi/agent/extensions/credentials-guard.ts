@@ -3,8 +3,9 @@
  *
  * Blocks any tool call (read / write / edit / grep / find / ls / bash) that
  * touches credential files: .env*, .ssh/, auth.json, *.pem|key|p12|pfx,
- * credentials*, secrets.*. Complements the AGENTS.md credentials rule with
- * structural enforcement.
+ * credentials*, secrets.*, plus pi-web-access config (~/.pi/web-search.json
+ * holds provider API keys, web-search-cache/ holds fetched content).
+ * Complements the AGENTS.md credentials rule with structural enforcement.
  */
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
@@ -15,6 +16,8 @@ const CREDENTIAL_PATTERNS = [
 	/\.(pem|key|p12|pfx)$/,
 	/credentials($|\.)/, // credentials, credentials.json, ~/.aws/credentials
 	/secret(s)?\.(json|ya?ml|txt)$/,
+	/web-search\.json$/, // pi-web-access: provider API keys
+	/web-search-cache(\/|"|$)/, // pi-web-access: fetched content cache (" matches JSON-serialized grep/find/ls input)
 ];
 
 function touchesCredentials(text: string): boolean {

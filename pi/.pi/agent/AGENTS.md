@@ -8,3 +8,8 @@
 ## Credentials & secrets
 - Never read, write, or print credential files: `.env*`, `.ssh/`, `auth.json`, `*.pem`/`*.key`/`*.p12`/`*.pfx`, `credentials*`, `secrets.*`
 - Never expose API keys, tokens, or passwords in outputs, logs, or git history
+
+## Dotfiles
+- When creating or editing portable config files, save them under `~/dotfiles/<package>/...`
+  (matching the stow layout) and run `stow --no-folding <package>` so the live file is a
+  symlink into the repo; keep them keyless — secrets go in a gitignored `.env`

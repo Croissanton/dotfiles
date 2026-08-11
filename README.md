@@ -18,6 +18,10 @@ Contains pi (coding agent) config:
 - `.pi/agent/extensions/inline-bash.ts` — inline bash expansion (`!{cmd}` in prompts)
 - `.pi/agent/extensions/credentials-guard.ts` — always-on guard that blocks any tool call touching
   credential files (`.env*`, `.ssh/`, `auth.json`, `*.pem`/`*.key`, `credentials*`, `secrets.*`)
+- `.pi/web-search.json` — web-search provider routing (`pi-web-access` extension).
+  **Committed keyless by convention:** API keys for search providers go in a gitignored `.env`
+  (or exported env vars), never in this file — the package reads e.g. `EXA_API_KEY`/
+  `BRAVE_API_KEY`/`TAVILY_API_KEY` from the environment.
 
 Retired (still in git history): a `modes.ts` extension with `/plan` and `/ask` read-only modes.
 For the occasional read-only session, pi's built-in flag covers it without any extension:
