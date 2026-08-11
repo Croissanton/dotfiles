@@ -14,10 +14,13 @@ source "${ZINIT_HOME}/zinit.zsh"
 # line 1: `starship` binary as command, from github release
 # line 2: starship setup at clone(create init.zsh, completion)
 # line 3: pull behavior same as clone, source init.zsh
-zinit ice as"command" from"gh-r" \
-          atclone"./starship init zsh > init.zsh; ./starship completions zsh > _starship" \
-          atpull"%atclone" src"init.zsh"
-zinit light starship/starship
+# The prompt only makes sense in a real terminal; skip non-tty runs (e.g. omp `!cmd` -> zsh -i -c, TERM=dumb)
+if [[ -t 0 ]]; then
+   zinit ice as"command" from"gh-r" \
+             atclone"./starship init zsh > init.zsh; ./starship completions zsh > _starship" \
+             atpull"%atclone" src"init.zsh"
+   zinit light starship/starship
+fi
 
 # Add in zsh plugins
 zinit light zsh-users/zsh-syntax-highlighting
@@ -71,7 +74,10 @@ alias diff='batdiff'
 alias k='kubectl'
 
 # Shell integrations
-eval "$(fzf --zsh)"
+# fzf keybindings need a real line editor; skip non-tty runs (e.g. omp `!cmd` -> zsh -i -c, TERM=dumb)
+if [[ -t 0 ]]; then
+   eval "$(fzf --zsh)"
+fi
 eval "$(zoxide init zsh)"
 
 # Yazi config
@@ -92,3 +98,14 @@ source <(kubectl completion zsh)
 # labctl
 export PATH=$PATH:/home/croiss/.iximiuz/labctl/bin
 source <(labctl completion zsh)
+
+# herdr
+export PATH="/home/croiss/.local/bin:$PATH"
+
+# Auto-start herdr on interactive shell startup
+if [[ -z "$HERDR_SESSION" ]] && [[ $- == *i* ]]; then
+    export HERDR_SESSION="true"
+    exec herdr
+fi
+
+export EDITOR=nvim

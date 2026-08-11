@@ -44,3 +44,7 @@ keybind = alt+a>l=goto_split:right
 keybind = alt+a>z=toggle_split_zoom
 
 keybind = alt+a>e=equalize_splits
+
+# omp
+keybind = alt+backspace=text:\x1b\x7f
+keybind = shift+enter=text:\n
