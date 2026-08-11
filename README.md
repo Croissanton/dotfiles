@@ -16,6 +16,13 @@ Contains pi (coding agent) config:
 
 - `.pi/agent/AGENTS.md` — global instructions loaded in every pi session
 - `.pi/agent/extensions/inline-bash.ts` — inline bash expansion (`!{cmd}` in prompts)
+- `.pi/agent/extensions/modes.ts` — `/plan` and `/ask` commands (mutually exclusive, single state):
+  `/plan [file]` = read-only with `PLAN.md` writable; `/ask` = read-only, nothing writable;
+  `/plan off`/`/ask off` or `--plan`/`--ask` at launch. The active mode is announced to the
+  model in the system prompt.
+- `.pi/agent/extensions/lib/safe-bash.ts` — shared read-only bash filter used by `modes.ts`
+- `.pi/agent/extensions/credentials-guard.ts` — always-on guard that blocks any tool call touching
+  credential files (`.env*`, `.ssh/`, `auth.json`, `*.pem`/`*.key`, `credentials*`, `secrets.*`)
 
 **Always stow `pi` with `--no-folding`.** Without it, stow links the whole
 `~/.pi` directory, which also holds machine-specific files (`auth.json`,
