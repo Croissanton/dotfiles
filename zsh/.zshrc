@@ -72,6 +72,7 @@ alias man='batman'
 alias tree='broot'
 alias diff='batdiff'
 alias k='kubectl'
+alias diff="delta"
 
 # Shell integrations
 # fzf keybindings need a real line editor; skip non-tty runs (TERM=dumb)
