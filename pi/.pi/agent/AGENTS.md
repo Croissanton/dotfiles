@@ -1,5 +1,10 @@
 # Global Instructions
 
+## Privilege escalation
+- NEVER attempt to use `sudo` (or `doas`, `su`, or any privilege escalation) — the interactive
+  shell has no passwordless access and a prompt cannot be answered. Provide commands for the user
+  to run themselves instead.
+
 ## Terraform repos
 - Terraform runs in CI via GitHub Actions — never run `terraform apply` locally
 - Edit only `.tf` / `.tfvars` files; never modify `.github/workflows/` or backend/state configuration
