@@ -1,0 +1,18 @@
+[Unit]
+Description=pi RPC socket — one pi process per connection
+
+[Socket]
+ListenStream=%t/pi-web/pi.sock
+SocketMode=0600
+DirectoryMode=0700
+# Accept=yes is REQUIRED: without it systemd hands the listening socket to a single
+# non-template service instead of spawning one pi per connection, and MaxConnections
+# is meaningless. This is what makes one connection == one session == one process.
+Accept=yes
+# Concurrent sessions. Measured ~115 MB RSS each idle, ~342 MB for three, and the box has ~6 GB
+# free plus a CI runner to share with. Symptom when this is hit: `Refused:` increments in
+# `systemctl --user status pi-web.socket` and new sessions fail to open instead of erroring loudly.
+MaxConnections=5
+
+[Install]
+WantedBy=sockets.target
