@@ -19,6 +19,14 @@
   (matching the stow layout) and run `stow --no-folding <package>` so the live file is a
   symlink into the repo; keep them keyless — secrets go in a gitignored `.env`
 
+## Remote development sessions
+- For an explicit request to start, inspect, or hand off persistent Pi work on Adam,
+  load the `remote-pi` skill. Use `dev@adam`, an approved development checkout, and an
+  explicitly selected Herdr session. Creating a ticket is not permission to launch a
+  worker. Never give the development account live service credentials or Docker access.
+- For ticket-only requests, use the Vikunja skill; its local profile maps both local
+  commands and explicitly requested operations through `dev@adam`.
+
 ## Shared Pi configuration and synchronization
 - Canonical checkout: `~/repos/dotfiles`. Stow package links live under `~/dotfiles/`.
   Read `config-sync/README.md` and `pi/README.md` in that checkout before changing

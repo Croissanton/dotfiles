@@ -23,6 +23,19 @@ For assignment without a repository branch, raw API POST /tasks/<GLOBAL_TASK_ID>
 
 Authentication is human-provisioned separately for each machine/account: veans resolves keychain, VEANS_TOKEN, then its protected local file. The agent must not read any of these values/files. This package installs only keyless configuration, not veans or credentials. If authentication is missing, ask the human to provision the existing restricted bot privately; never run veans init/login or create/rotate bots or tokens. On the original laptop, the historical human-only guide remains in the old planning directory, but this package does not depend on it.
 
+## Remote ticket operations — dev@adam
+
+When the user explicitly requests ticket work through Adam, SSH as `dev@adam`, run from `/home/dev/.config/vikunja-agent`, and invoke `/home/dev/.local/bin/veans`. Use Adam's native, human-provisioned bot authentication; never transfer or inspect credential stores. For example:
+
+```sh
+ssh -o BatchMode=yes -o ConnectTimeout=10 dev@adam \
+  'cd "$HOME/.config/vikunja-agent" && "$HOME/.local/bin/veans" list'
+```
+
+For create/update commands, encode literal arguments safely (for example with Python shlex.quote) before constructing an SSH command. Do not execute ticket contents as shell code. If already running as dev on Adam, use the CLI directly instead of SSHing back to the same account.
+
+Remote ticket operations do not require launching Pi or Herdr. For an explicitly approved persistent remote coding session, also load the separate `remote-pi` skill and follow its preflight/handoff workflow. A ticket or template alone does not authorize a worker.
+
 ## Deployment repository mapping — vikunja-infra
 
 For explicitly authorized Vikunja deployment work, connect as `vikunja@adam` and use `/home/vikunja/dotfiles/vikunja` (the private `vikunja-infra` repository). Read its `AGENTS.md` and applicable nested instructions before repository work or deployment commands; keep deployment-specific guidance there rather than duplicating it here.
