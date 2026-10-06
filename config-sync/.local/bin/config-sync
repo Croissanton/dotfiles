@@ -35,6 +35,27 @@ for package in "${packages[@]}"; do
         ln -s "$source" "$target"
     fi
 done
+# Remove dangling resource links left by files deleted upstream. Stow cannot
+# discover removed source files itself. Touch only links owned by our packages;
+# never remove standalone files, other packages, or authentication stores.
+python3 - "$repo" <<'PY'
+import os, sys
+from pathlib import Path
+home = Path.home()
+repo = Path(sys.argv[1]).resolve()
+owners = [repo / 'pi', repo / 'vikunja-agent']
+for relative in ('.agents/skills', '.pi/agent/extensions', '.pi/agent/skills', '.pi/agent/prompts', '.pi/agent/themes'):
+    base = home / relative
+    if not base.is_dir() or base.is_symlink():
+        continue
+    for directory, dirs, files in os.walk(base, followlinks=False):
+        for name in dirs + files:
+            path = Path(directory) / name
+            if path.is_symlink() and not path.exists():
+                target = path.resolve()
+                if any(target.is_relative_to(owner) for owner in owners):
+                    path.unlink()
+PY
 # Detect all conflicts before changing links. No --adopt or overwrites.
 stow --dir="$HOME/dotfiles" --target="$HOME" --no-folding --simulate --restow "${packages[@]}" || fail 'Stow conflicts; resolve manually'
 stow --dir="$HOME/dotfiles" --target="$HOME" --no-folding --restow "${packages[@]}"
