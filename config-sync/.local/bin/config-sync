@@ -38,7 +38,30 @@ done
 # Detect all conflicts before changing links. No --adopt or overwrites.
 stow --dir="$HOME/dotfiles" --target="$HOME" --no-folding --simulate --restow "${packages[@]}" || fail 'Stow conflicts; resolve manually'
 stow --dir="$HOME/dotfiles" --target="$HOME" --no-folding --restow "${packages[@]}"
+python3 "$repo/config-sync/.local/bin/pi-config"
+# Reconcile package installations when the shared manifest or Pi version changes.
+pi_bin="$HOME/.pi/agent/bin/pi"
+if [[ ! -x "$pi_bin" ]]; then
+    pi_bin="$(command -v pi || true)"
+fi
+[[ -n "$pi_bin" ]] || fail 'Pi is not installed; install it privately before package synchronization'
+signature="$(python3 - "$repo/pi/.config/pi-shared/settings.json" <<'PY'
+import hashlib, json, sys
+from pathlib import Path
+packages = json.loads(Path(sys.argv[1]).read_text()).get('packages', [])
+print(hashlib.sha256(json.dumps(packages, sort_keys=True).encode()).hexdigest())
+PY
+)-$("$pi_bin" --version)"
+stamp="$HOME/.cache/config-sync/pi-packages.signature"
+previous=""
+[[ ! -f "$stamp" ]] || previous="$(<"$stamp")"
+if [[ "$signature" != "$previous" ]]; then
+    # Package declarations are trusted executable configuration. Do not render
+    # provider credentials or package output into the scheduler journal.
+    (cd "$HOME"; "$pi_bin" update --extensions --no-approve) >/dev/null 2>&1 || fail 'Pi package reconciliation failed; troubleshoot interactively'
+    printf '%s\n' "$signature" >"$stamp"
+fi
 if [[ " ${packages[*]} " == *' config-sync-auto '* ]]; then
     systemctl --user daemon-reload
 fi
-printf 'config-sync: configuration synchronized; use /reload or restart Pi to load changes.\n'
+printf 'config-sync: configuration and packages synchronized; use /reload or restart Pi to load changes.\n'

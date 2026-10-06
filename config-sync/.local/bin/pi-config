@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+"""Export/apply portable Pi preferences only; never inspect auth stores."""
+import argparse
+import json
+import os
+from pathlib import Path
+import re
+import tempfile
+
+# Deliberately exclude proxy URLs, commands, resource paths, device IDs and caches.
+PORTABLE = {
+    'defaultProvider', 'defaultModel', 'defaultThinkingLevel', 'modelThinkingLevels',
+    'thinkingBudgets', 'enabledModels', 'hideThinkingBlock', 'showCacheMissNotices',
+    'cacheWarming', 'steeringMode', 'followUpMode', 'doubleEscapeAction',
+    'treeFilterMode', 'defaultProjectTrust', 'defaultTools', 'codemode',
+    'compaction', 'branchSummary', 'theme', 'quietStartup', 'tuiMode',
+    'fullscreenExitOutput', 'fullscreenScrollbar', 'fullscreenCopyOnSelect',
+    'fullscreenWheelScrollLines', 'editorPaddingX', 'outputPad',
+    'autocompleteMaxVisible', 'showHardwareCursor', 'terminal', 'images',
+    'markdown', 'transport', 'httpIdleTimeoutMs', 'websocketConnectTimeoutMs',
+    'retry', 'enableSkillCommands', 'collapseChangelog', 'enableInstallTelemetry',
+    'enableAnalytics', 'warnings', 'packages',
+}
+PACKAGE = re.compile(r'^npm:(@[^/\s:]+/)?[a-zA-Z0-9_.-]+(@[a-zA-Z0-9_.+-]+)?$')
+PRIVATE_KEY = re.compile(r'(^token$|access.?token|refresh.?token|password|secret|credential|api.?key|authorization)', re.I)
+
+def validate(value):
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if PRIVATE_KEY.search(key):
+                raise ValueError('Secret-like preference key; stopped without displaying it')
+            validate(child)
+    elif isinstance(value, list):
+        for child in value:
+            validate(child)
+    elif isinstance(value, str):
+        if value.startswith(('sk-', 'tk_', 'Bearer ', '-----BEGIN')):
+            raise ValueError('Secret-like preference value; stopped without displaying it')
+
+def check(data):
+    if not isinstance(data, dict) or set(data) - PORTABLE:
+        raise ValueError('Unsupported shared preference keys')
+    validate(data)
+    packages = data.get('packages', [])
+    if not isinstance(packages, list) or any(not isinstance(p, str) or not PACKAGE.fullmatch(p) for p in packages):
+        raise ValueError('Only explicit npm package declarations are supported; review other sources manually')
+
+def load(path):
+    return json.loads(path.read_text()) if path.is_file() else {}
+
+def save(path, data):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    # Resolve existing Stow symlinks, if any, instead of replacing them.
+    path = path.resolve()
+    fd, temp = tempfile.mkstemp(prefix='.pi-preferences-', dir=path.parent)
+    try:
+        with os.fdopen(fd, 'w') as stream:
+            json.dump(data, stream, indent=2)
+            stream.write('\n')
+        os.replace(temp, path)
+    finally:
+        if os.path.exists(temp):
+            os.unlink(temp)
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--export', action='store_true', help='capture local preferences into the dotfiles checkout; review and push manually')
+    args = parser.parse_args()
+    home = Path.home()
+    local = home / '.pi/agent/settings.json'
+    shared = home / 'repos/dotfiles/pi/.config/pi-shared/settings.json'
+    if args.export:
+        data = {k: v for k, v in load(local).items() if k in PORTABLE}
+        check(data)
+        pinned = []
+        for source in data.get('packages', []):
+            spec = source[4:]
+            name = spec.rsplit('@', 1)[0] if '@' in spec[1:] else spec
+            manifest = home / '.pi/agent/npm/node_modules' / name / 'package.json'
+            if not manifest.is_file():
+                raise ValueError('A declared package is not installed; resolve it before exporting')
+            version = load(manifest)['version']
+            pinned.append('npm:' + name + '@' + version)
+        if 'packages' in data:
+            data['packages'] = pinned
+        check(data)
+        save(shared, data)
+        print('pi-config: exported portable preferences; review, commit and push manually.')
+    else:
+        if not shared.is_file():
+            raise ValueError('Shared preferences file is missing')
+        data = load(shared)
+        check(data)
+        current = load(local)
+        merged = {**current, **data}
+        if merged != current:
+            save(local, merged)
+        print('pi-config: shared preferences applied; device-specific fields preserved.')
+
+if __name__ == '__main__':
+    try:
+        main()
+    except (ValueError, OSError, KeyError):
+        raise SystemExit('pi-config: validation or file operation failed; inspect keyless preferences privately.')

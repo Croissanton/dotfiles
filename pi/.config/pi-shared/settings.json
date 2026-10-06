@@ -1,0 +1,19 @@
+{
+  "defaultProvider": "openai",
+  "defaultModel": "gpt-6-luna",
+  "defaultThinkingLevel": "high",
+  "theme": "dark",
+  "enabledModels": [
+    "openai/gpt-6-astra",
+    "openai/gpt-6-luna",
+    "openai/gpt-6.1-sol"
+  ],
+  "hideThinkingBlock": true,
+  "compaction": {
+    "enabled": false
+  },
+  "packages": [
+    "npm:pi-web-access@0.37.0",
+    "npm:@juicesharp/rpiv-ask-user-question@2.12.0"
+  ]
+}

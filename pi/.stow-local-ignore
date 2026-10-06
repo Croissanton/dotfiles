@@ -1,0 +1,5 @@
+(^|/)\.git($|/)
+(^|/)\.stow-local-ignore$
+^/README\.md$
+# Existing machine-local web-search configuration must never be deployed.
+(^|/)web-search\.json$
