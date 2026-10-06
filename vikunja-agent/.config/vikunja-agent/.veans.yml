@@ -1,0 +1,17 @@
+# Keyless, local-only Integration Sandbox mapping. No token belongs in this file.
+# Authentication: native VEANS_TOKEN environment support (human supplies privately).
+# Do not run veans init: reuse the existing bot and human-created board.
+# Native bot identity confirmed from its sandbox setup task.
+# Leave ready-for-human-review tasks incomplete in In Review.
+# Scrapped remains unmapped and unused.
+server: https://adam.nebulosa-lenok.ts.net:8443/
+project_id: 2
+view_id: 8
+buckets:
+  todo: 4
+  in_progress: 5
+  in_review: 13
+  done: 6
+bot:
+  username: bot-pi
+  user_id: 3

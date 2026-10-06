@@ -2,3 +2,16 @@
 .env
 .env.*
 !.env.example
+
+# Machine-local web-search configuration; may contain provider credentials.
+/pi/.pi/web-search.json
+
+# Never commit agent authentication stores or private key material.
+auth.json
+credentials*
+secrets.*
+*.pem
+*.key
+*.p12
+*.pfx
+.ssh/

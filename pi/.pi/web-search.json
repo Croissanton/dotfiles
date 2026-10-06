@@ -1,7 +1,0 @@
-{
-  "searchRouting": {
-    "providers": ["tavily", "exa", "anysearch", "duckduckgo"],
-    "fallbackOn": ["transient", "quota", "network", "invalid-response"]
-  },
-  "workflow": "auto-summary"
-}
