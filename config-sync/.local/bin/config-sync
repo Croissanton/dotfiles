@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Pull-only sync for trusted, keyless agent configuration. Never provisions auth.
+set -euo pipefail
+repo="$HOME/repos/dotfiles"
+fail() { printf 'config-sync: %s\n' "$*" >&2; exit 1; }
+command -v flock >/dev/null || fail 'flock is required'
+command -v stow >/dev/null || fail 'stow is required'
+mkdir -p "$HOME/.cache/config-sync"
+exec 9>"$HOME/.cache/config-sync/lock"
+flock -n 9 || exit 0
+[[ -d "$repo/.git" ]] || fail 'expected checkout at ~/repos/dotfiles'
+[[ "$(git -C "$repo" symbolic-ref --quiet --short HEAD)" == main ]] || fail 'checkout must be on main'
+# Check the entire checkout, including unrelated edits; never overwrite local work.
+[[ -z "$(git -C "$repo" status --porcelain)" ]] || fail 'checkout has local changes; commit, stash, or resolve them manually'
+export GIT_TERMINAL_PROMPT=0
+export GIT_SSH_COMMAND='ssh -o BatchMode=yes'
+git -C "$repo" fetch --quiet origin main >/dev/null 2>&1 || fail 'noninteractive fetch failed; check network/authentication privately'
+# Even locally-ahead history requires a human decision, not an automatic merge.
+git -C "$repo" merge-base --is-ancestor HEAD origin/main || fail 'local history is ahead or diverged; resolve manually'
+git -C "$repo" -c core.hooksPath=/dev/null merge --ff-only origin/main >/dev/null 2>&1 || fail 'fast-forward failed'
+mkdir -p "$HOME/dotfiles"
+packages=(pi vikunja-agent config-sync)
+if [[ -L "$HOME/.config/systemd/user/config-sync.timer" ]]; then
+    packages+=(config-sync-auto)
+fi
+for package in "${packages[@]}"; do
+    source="$repo/$package"
+    target="$HOME/dotfiles/$package"
+    [[ -d "$source" ]] || fail "missing package: $package"
+    if [[ -L "$target" ]]; then
+        [[ "$target" -ef "$source" ]] || fail "package link points elsewhere: $package"
+    elif [[ -e "$target" ]]; then
+        fail "package path already exists: $package"
+    else
+        ln -s "$source" "$target"
+    fi
+done
+# Detect all conflicts before changing links. No --adopt or overwrites.
+stow --dir="$HOME/dotfiles" --target="$HOME" --no-folding --simulate --restow "${packages[@]}" || fail 'Stow conflicts; resolve manually'
+stow --dir="$HOME/dotfiles" --target="$HOME" --no-folding --restow "${packages[@]}"
+if [[ " ${packages[*]} " == *' config-sync-auto '* ]]; then
+    systemctl --user daemon-reload
+fi
+printf 'config-sync: configuration synchronized; use /reload or restart Pi to load changes.\n'

@@ -1,0 +1,8 @@
+[Unit]
+Description=Pull and Stow trusted agent configuration
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/config-sync
+TimeoutStartSec=120
+UMask=0077
