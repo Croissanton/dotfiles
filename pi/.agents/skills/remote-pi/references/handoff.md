@@ -33,7 +33,8 @@ Progress and final report
 - Do not start another task automatically after finishing.
 
 Session record (filled by launcher)
-- Launch time, Herdr session, agent name, returned pane ID, checkout/branch.
+- Unique task-record ID, launch time, shared Herdr session (normally remote-work), workspace/pane IDs, unique agent name, checkout/branch, and native Pi conversation ID/path when available.
+- Separate records for separate Pi instances; do not overwrite another task's handoff.
 - Actual observed launch state and how to reconnect.
 ```
 

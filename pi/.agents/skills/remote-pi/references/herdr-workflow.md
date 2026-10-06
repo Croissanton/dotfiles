@@ -16,15 +16,18 @@ loginctl show-user dev -p Linger
 
 Use `herdr agent`, `herdr workspace`, or other command groups for syntax discovery; do not probe mutating subcommands with omitted arguments. Recheck supported flags against installed help. For this remote workflow always select the intended named session explicitly; inherited local pane IDs and another client's focus do not identify the remote task.
 
-## Start a dedicated headless server
+## Start or reuse the shared headless server
 
-Choose a unique session name matching the approved task, for example `task-<project-index>-<short-slug>`. Require a simple lowercase name matching `[a-z][a-z0-9_-]{0,31}`; never use slashes, traversal segments, or raw ticket titles in paths. Check session inventory and any saved record first. Do not reuse an existing session with another occupant or start it twice.
+Use `remote-work` as the shared Herdr session unless the user explicitly selects another. Check session inventory and task records first; verify that an existing session is the intended development workspace, without restarting it or disturbing its other agents. A different Pi task normally gets a new workspace/pane in this server, not another Herdr session.
 
-If no server exists for this authorized task, the following pattern starts Herdr independently of the SSH transport. Substitute a concrete approved session name; do not execute unresolved examples:
+Choose a unique task-record ID, for example `task-<project-index>-<short-slug>`, matching `[a-z][a-z0-9_-]{0,31}`. Never use slashes, traversal segments, or raw ticket titles in paths. Give each Pi instance a unique agent name and its own record.
+
+If this shared server is missing, a future authorized launch can start it independently of the SSH transport. Substitute a concrete task ID; do not execute unresolved examples. Skip startup entirely when the verified server is already running:
 
 ```sh
-session='APPROVED-SESSION-NAME'
-record_dir="$HOME/.local/state/remote-pi/$session"
+session='remote-work'
+task_id='APPROVED-TASK-ID'
+record_dir="$HOME/.local/state/remote-pi/$task_id"
 umask 077
 mkdir -p "$record_dir"
 nohup env PATH="$HOME/.pi/agent/bin:$HOME/.local/bin:$PATH" \
@@ -38,7 +41,7 @@ The above headless-start pattern is documented by Herdr's CLI but was not execut
 
 ## Create layout and Pi
 
-After the correct session's server is ready, create one dedicated workspace for the approved checkout:
+After the shared session's server is ready, create one dedicated task workspace for the approved checkout. Preserve every other worker and the user's focus. Concurrent Pi instances must be explicitly approved and use independent checkouts/worktrees; a different branch name in the same working directory is not isolation:
 
 ```sh
 herdr --session "$session" workspace create \
@@ -61,6 +64,7 @@ For long work, submit once without waiting indefinitely. Observe `working` or in
 ## Inspect and reconnect
 
 ```sh
+session='remote-work'
 herdr --session "$session" agent list
 herdr --session "$session" agent get "$agent_name"
 herdr --session "$session" agent read "$agent_name" --source visible --lines 40
@@ -73,14 +77,16 @@ From a phone or computer terminal:
 ```sh
 ssh dev@adam
 export PATH="$HOME/.pi/agent/bin:$HOME/.local/bin:$PATH"
-herdr --session APPROVED-SESSION-NAME
+herdr --session remote-work
 ```
 
 From a compatible local Herdr client:
 
 ```sh
-herdr --remote dev@adam --session APPROVED-SESSION-NAME
+herdr --remote dev@adam --session remote-work
 ```
+
+Select the task's workspace/pane after attaching; each contains its own Pi instance/conversation. `herdr --session remote-work agent list` lists live agents, while completed/exited tasks remain identifiable from their handoff records and saved Pi conversations. Session inventory alone is not a list of Pi conversations.
 
 Detach the client with `Ctrl+B`, then `Q`; the remote panes remain server-owned. Do not run `herdr server stop`, session stop/delete, or kill processes merely to detach. Reboot/suspend and full server stops interrupt execution; saved layout/conversation state is not proof of uninterrupted or automatically resumed work.
 
