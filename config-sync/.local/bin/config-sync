@@ -45,7 +45,7 @@ if [[ ! -x "$pi_bin" ]]; then
     pi_bin="$(command -v pi || true)"
 fi
 [[ -n "$pi_bin" ]] || fail 'Pi is not installed; install it privately before package synchronization'
-signature="$(python3 - "$repo/pi/.config/pi-shared/settings.json" <<'PY'
+signature="install-v2-$(python3 - "$repo/pi/.config/pi-shared/settings.json" <<'PY'
 import hashlib, json, sys
 from pathlib import Path
 packages = json.loads(Path(sys.argv[1]).read_text()).get('packages', [])
@@ -58,7 +58,16 @@ previous=""
 if [[ "$signature" != "$previous" ]]; then
     # Package declarations are trusted executable configuration. Do not render
     # provider credentials or package output into the scheduler journal.
-    (cd "$HOME"; "$pi_bin" update --extensions --no-approve) >/dev/null 2>&1 || fail 'Pi package reconciliation failed; troubleshoot interactively'
+    # update alone can skip pinned packages that are not installed yet.
+    while IFS= read -r source; do
+        (cd "$HOME"; "$pi_bin" install "$source" --no-approve) >/dev/null 2>&1 || fail 'Pi package installation failed; troubleshoot interactively'
+    done < <(python3 - "$repo/pi/.config/pi-shared/settings.json" <<'PY'
+import json, sys
+from pathlib import Path
+for source in json.loads(Path(sys.argv[1]).read_text()).get('packages', []):
+    print(source)
+PY
+)
     printf '%s\n' "$signature" >"$stamp"
 fi
 if [[ " ${packages[*]} " == *' config-sync-auto '* ]]; then
